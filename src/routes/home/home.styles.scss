@@ -1,0 +1,17 @@
+/** @format */
+
+.home {
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+  //   border: 1px solid black;
+  &-title {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+    font-family: 'Ubuntu';
+    // font-weight: 600;
+    // height: 40vh;
+    // border: 1px solid blue;
+  }
+}

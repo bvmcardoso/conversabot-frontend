@@ -13,8 +13,10 @@ const Navigation = () => {
           <div className="user-nav__icon">{<Logo className="logo" />}</div>
         </Link>
         <div className="user-nav__link">
-          <Link className="nav-link">Chat</Link>
-          <Link className="nav-link">Youtube Summarizer</Link>
+          <Link className="nav-link" to="chat">
+            Chat
+          </Link>
+          {/* <Link className="nav-link">Youtube Summarizer</Link> */}
         </div>
       </div>
       <Outlet />
