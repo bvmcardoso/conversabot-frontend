@@ -4,19 +4,35 @@
 .chat {
   display: flex;
   justify-content: space-between;
+  
   margin-top: 1rem;
-  height: 80rem;
+  height: 35rem;
   border-top: var(--color-grey-light-2);
+
+  &-content {
+    flex: 0 0 85%;
+    margin-left: 1rem;
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    &__result {
+      width: 90%;
+      display: flex;
+      text-align: center;
+    }
+  }
 }
 /////////////////
 // SIDE BAR
 .sidebar {
-  flex: 0 0 20%;
+  background-color: black;
+  flex: 0 0 15%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  //   background-color: var(--color-grey-dark-3);
-  background-color: var(--color-primary);
+  // background-color: black;
 
   &-content {
     overflow-y: auto;
@@ -45,6 +61,7 @@
     height: 100%;
     width: 3px;
     background-color: var(--color-primary-dark);
+    // background-color: black;
     transform: scaleY(0);
     transition: transform 0.2s, width 0.4s cubic-bezier(1, 0, 0, 1) 0.2s;
     // transform-origin: top;
@@ -62,7 +79,7 @@
     text-transform: uppercase;
     display: flex;
     align-items: center;
-    padding: 1.3rem 2.5rem;
+    padding: 1.3rem 2rem;
     z-index: 10;
     position: relative;
   }
@@ -72,9 +89,9 @@
   }
 
   &__icon {
-    width: 1.75rem;
-    height: 1.75rem;
-    margin-right: 2rem;
+    width: 0.7rem;
+    height: 0.7rem;
+    margin-right: 1rem;
     fill: var(--color-grey-light-1);
   }
 }
