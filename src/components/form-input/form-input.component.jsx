@@ -6,7 +6,7 @@ const FormInput = ({ label, value, onChange, ...otherProps }) => {
   return (
     <div className="form-input-container">
       <label>{label}</label>
-      <input type="text" value={value} onChange={onChange} {...otherProps} />
+      <textarea type="text" value={value} onChange={onChange} {...otherProps} />
     </div>
   );
 };

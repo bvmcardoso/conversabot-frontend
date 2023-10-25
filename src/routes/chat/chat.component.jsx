@@ -1,14 +1,25 @@
 /** @format */
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ReactComponent as Plus } from '../../assets/plus.svg';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+
 import './chat.styles.scss';
 import Button from '../../components/button/button.component';
 import FormInput from '../../components/form-input/form-input.component';
-
+import SideBar from '../../components/sidebar/sidebar.component';
+import ProjectEstimator from '../../components/project-estimator/project-estimator.component';
 const Chat = () => {
+  const location = useLocation();
   const [aiSearch, setAiSearch] = useState('');
   const [aiResult, setAiResult] = useState('');
+  const [showNewChatContent, setShowNewChatContent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const replaceNewLinesWithBreaks = (text) => {
+    return text.replace(/(?:\r\n|\r|\n)/g, '<br>');
+  };
+
+  useEffect(() => {
+    setShowNewChatContent(false);
+  }, [location]);
 
   const handleAiSearchChange = (event) => {
     event.preventDefault();
@@ -17,6 +28,7 @@ const Chat = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     const url = 'http://localhost:8080/api/chats/';
     // Make a post to the backend:
 
@@ -31,8 +43,10 @@ const Chat = () => {
 
       //   Parse and set the AI result from the response
       const resultData = await response.json();
-      setAiResult(resultData.message);
-      console.log(aiResult);
+      const parsed_response = resultData.message;
+      console.log(parsed_response);
+      setAiResult(parsed_response);
+      setAiSearch('');
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -42,41 +56,51 @@ const Chat = () => {
       }
     } catch (error) {
       console.log('Error submitting the form', error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const handleNewChatClick = () => {
+    setShowNewChatContent(true);
+  };
+
   return (
-    <div className="chat">
-      <nav className="sidebar">
-        <ul className="side-nav">
-          <li className="side-nav__item">
-            <Link to="" className="side-nav__link">
-              {<Plus className="side-nav__icon" />}
-              <span>New Chat</span>
-            </Link>
-          </li>
-        </ul>
-        <div className="legal">
-          &copy; 2023 by Bruno Vinícius. All rights reserved.
-        </div>
-      </nav>
-      <div className="chat-content">
-        <div className="chat-content__result">
-          {aiResult && <p>{aiResult}</p>}
-        </div>
-        <div className="chat-content__search">
-          <form onSubmit={handleSubmit} className="form-container">
-            <FormInput
-              label="ChatGPT Search"
-              value={aiSearch}
-              onChange={handleAiSearchChange}
-              placeholder="How can I help you today?"
-            />
-            <Button>Search</Button>
-          </form>
-        </div>
+    <>
+      {isLoading && <div class="spinner">Please wait...</div>}
+      <div className="chat">
+        <SideBar onNewChatClick={handleNewChatClick} />
+        {showNewChatContent ? (
+          <div className="chat-content">
+            <div className="chat-content__result">
+              {aiResult && (
+                <pre
+                  dangerouslySetInnerHTML={{
+                    __html: replaceNewLinesWithBreaks(aiResult),
+                  }}
+                />
+              )}
+              {/* {aiResult && <ProjectEstimator formattedData={aiResult} />} */}
+            </div>
+            <div className="chat-content__search">
+              <form onSubmit={handleSubmit} className="form-container">
+                <FormInput
+                  label="ChatGPT Search"
+                  value={aiSearch}
+                  onChange={handleAiSearchChange}
+                  placeholder="How can I help you today?"
+                />
+                <Button>Search</Button>
+              </form>
+            </div>
+          </div>
+        ) : (
+          <div className="chat-default">
+            <h1>CHAT GPT</h1>
+          </div>
+        )}
       </div>
-    </div>
+    </>
   );
 };
 

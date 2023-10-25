@@ -1,9 +1,11 @@
 /** @format */
 .user-nav {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   margin-top: 1rem;
+  text-transform: uppercase;
+  position: relative;
 
   &__link {
     display: flex;
