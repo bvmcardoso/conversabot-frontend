@@ -11,7 +11,8 @@ import './button.styles.scss';
 const BUTTON_TYPE_CLASSES = {
   google: 'google-sign-in',
   inverted: 'inverted',
-  chat: 'new-chat',
+  new: 'new-chat',
+  existing: 'existing-chat',
 };
 
 const Button = ({ children, buttonType, onClick, ...otherProps }) => {
