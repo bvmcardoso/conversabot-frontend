@@ -69,4 +69,9 @@
   font-size: 2.5rem;
   color: var(--color-primary);
   z-index: 999;
+
+  &__logo {
+    height: 100px;
+    width: auto;
+  }
 }

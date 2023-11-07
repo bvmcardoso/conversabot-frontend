@@ -8,13 +8,22 @@ import axios from 'axios';
 import { ChatContext } from '../../contexts/chat.context';
 import { Link } from 'react-router-dom';
 
-const SideBar = ({ onNewChatClick, currentChatId, currentChatSummary }) => {
-  const [existingChats, setExistingChats] = useState([]);
+const SideBar = ({ onNewChatClick }) => {
+  const { existingChats, setExistingChats } = useContext(ChatContext);
   const { setCurrentOpenedChat, currentOpenedChat } = useContext(ChatContext);
+  const { setAiResult } = useContext(ChatContext);
 
-  const handleChatClick = async (chatId) => {
+  const handleExistingChatClick = async (chatId) => {
+    // Reset the AI results if the user created a new chat and then clicked on an existing one.
+    setAiResult({
+      id: null,
+      message: null,
+      userInput: null,
+      chatTitle: null,
+    });
     const url = 'http://localhost:8080/api/chats/';
     const response = await axios.get(`${url}${chatId}`);
+
     if (response.data) {
       const updatedChat = {
         id: response.data.id,
@@ -22,15 +31,15 @@ const SideBar = ({ onNewChatClick, currentChatId, currentChatSummary }) => {
         messages: response.data.messages,
       };
       setCurrentOpenedChat(updatedChat);
-      console.log({ currentOpenedChat });
+      console.log(currentOpenedChat);
     }
   };
 
+  //   When the component is mounted we get all existing chats.
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get('http://localhost:8080/api/chats/');
-        console.log(response.data);
         setExistingChats(response.data);
       } catch (err) {
         console.error(err);
@@ -48,18 +57,22 @@ const SideBar = ({ onNewChatClick, currentChatId, currentChatSummary }) => {
             <span>New Chat</span>
           </Button>
         </li>
-        {currentChatSummary && (
+        {/* {currentChatSummary && (
           <li className="side-nav__existing-chat">
             {<ConversationSvg className="side-nav__icon-big" />}
             <Link onClick={() => handleChatClick(currentChatId)}>
               {currentChatSummary}
             </Link>
           </li>
-        )}
+        )} */}
         {existingChats.map((chat) => (
-          <li className="side-nav__existing-chat">
+          <li
+            key={chat.id}
+            className="side-nav__existing-chat"
+            onClick={() => handleExistingChatClick(chat.id)}
+          >
             {<ConversationSvg className="side-nav__icon-big" />}
-            <Link onClick={() => handleChatClick(chat.id)}>{chat.title}</Link>
+            <Link>{chat.title}</Link>
           </li>
         ))}
       </ul>
