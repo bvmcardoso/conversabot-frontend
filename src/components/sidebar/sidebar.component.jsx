@@ -31,7 +31,9 @@ const SideBar = ({ onNewChatClick }) => {
         messages: response.data.messages,
       };
       setCurrentOpenedChat(updatedChat);
-      console.log(currentOpenedChat);
+      console.log(updatedChat.messages);
+      console.log("typeof(updatedChat.messages)", typeof(updatedChat.messages));
+      
     }
   };
 
@@ -57,14 +59,6 @@ const SideBar = ({ onNewChatClick }) => {
             <span>New Chat</span>
           </Button>
         </li>
-        {/* {currentChatSummary && (
-          <li className="side-nav__existing-chat">
-            {<ConversationSvg className="side-nav__icon-big" />}
-            <Link onClick={() => handleChatClick(currentChatId)}>
-              {currentChatSummary}
-            </Link>
-          </li>
-        )} */}
         {existingChats.map((chat) => (
           <li
             key={chat.id}

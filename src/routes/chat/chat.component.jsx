@@ -1,5 +1,5 @@
 /** @format */
-import React, { useState, useEffect, useContext } from 'react';
+import React, { Fragment, useState, useEffect, useContext } from 'react';
 import { ChatContext } from '../../contexts/chat.context';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -7,12 +7,12 @@ import './chat.styles.scss';
 import Button from '../../components/button/button.component';
 import FormInput from '../../components/form-input/form-input.component';
 import SideBar from '../../components/sidebar/sidebar.component';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/brncodex_logo.png';
+import HtmlContent from '../../components/htmlContent/htmlContent.component';
 
 const Chat = () => {
   const location = useLocation();
   const [userInput, setUserInput] = useState('');
-
   const [showNewChatContent, setShowNewChatContent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSingleLineResponse, setIsSingleLineResponse] = useState(true);
@@ -36,16 +36,6 @@ const Chat = () => {
     };
     fetchExistingChats();
   }, [currentOpenedChat]);
-
-  const replaceNewLinesWithBreaks = (text) => {
-    return text.replace(/(?:\r\n|\r|\n)/g, '<br>');
-  };
-
-  const checkIsSingleLineResponse = (textResponse) => {
-    if (textResponse.includes('\n')) {
-      setIsSingleLineResponse(false);
-    }
-  };
 
   const clearUserInput = () => {
     setUserInput('');
@@ -81,7 +71,6 @@ const Chat = () => {
       // Backend exception:
       if (!response.data.success) {
         const apiErrorMessage = await response.data.message;
-        checkIsSingleLineResponse(apiErrorMessage);
         setShowNewChatContent(false);
         setAiResult({
           message: apiErrorMessage,
@@ -93,7 +82,6 @@ const Chat = () => {
 
       // Parse and set the AI result from the response
       const apiResponse = await response.data;
-      checkIsSingleLineResponse(apiResponse.message);
       setAiResult({
         id: apiResponse.id,
         message: apiResponse.message,
@@ -111,13 +99,17 @@ const Chat = () => {
       setIsLoading(false);
     }
   };
+
   return (
-    <>
+    <Fragment>
       {isLoading && (
         <div className="spinner">
-          Please wait...
-          <br />
-          <img src={logo} className="spinner__logo" />
+          <div className="spinner__message">
+            <span>Please wait</span>
+          </div>
+          <div className="spinner__picture">
+            <img src={logo} alt="Logo" className="spinner__logo" />
+          </div>
         </div>
       )}
       <div className="chat">
@@ -148,15 +140,7 @@ const Chat = () => {
               </div>
               {aiResult.message && (
                 <div className="chat-result__answer">
-                  {!isSingleLineResponse ? (
-                    <pre
-                      dangerouslySetInnerHTML={{
-                        __html: replaceNewLinesWithBreaks(aiResult.message),
-                      }}
-                    />
-                  ) : (
-                    replaceNewLinesWithBreaks(aiResult.message)
-                  )}
+                  <HtmlContent htmlString={aiResult.message} />
                 </div>
               )}
             </div>
@@ -182,15 +166,7 @@ const Chat = () => {
                   <p>{existingChat.user_input}</p>
                 </div>
                 <div className="chat-result__answer">
-                  {isSingleLineResponse ? (
-                    <pre
-                      dangerouslySetInnerHTML={{
-                        __html: replaceNewLinesWithBreaks(existingChat.message),
-                      }}
-                    />
-                  ) : (
-                    replaceNewLinesWithBreaks(existingChat.message)
-                  )}
+                  <HtmlContent htmlString={existingChat.message} />
                 </div>
               </div>
             ))}
@@ -207,11 +183,8 @@ const Chat = () => {
             </div>
           </div>
         )}
-        {/* <div className="chat-default">
-          <h1>CHAT GPT</h1>
-        </div>{' '} */}
       </div>
-    </>
+    </Fragment>
   );
 };
 
