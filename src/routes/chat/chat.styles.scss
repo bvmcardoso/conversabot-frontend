@@ -4,7 +4,7 @@
 .chat {
   display: flex;
   justify-content: space-between;
-  height: calc(100vh - 6.5rem);
+  min-height: calc(100vh - 6.5rem);
 
   &-default {
     display: flex;
@@ -27,32 +27,36 @@
   &-result {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    line-height: 1.5;
+    align-items: center;
+    line-height: 1.4;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 1rem;
-    margin-bottom: 2rem;
-    overflow-y: auto;
-
+    overflow: auto;
+    max-height: 350px;
     word-wrap: break-word;
 
     &__question {
+      align-self: flex-start;
+      margin-left: 3rem;
       font-weight: bold;
+      margin-top: 2rem;
       margin-bottom: 1rem;
+      color: #000;
+      text-align: left;
     }
 
     &__answer {
-      border: 2px solid var(--color-grey-light-3);
+      border: 2px solid var(--color-blue-light-1);
       border-radius: 5px;
       padding: 0.5rem;
       overflow-x: auto;
       overflow-wrap: break-word;
-      max-width: 70vw;
+      max-width: 75vw;
     }
   }
 
   &-search {
-    margin-top: 0.1rem;
+    margin-top: 3rem;
   }
 }
 

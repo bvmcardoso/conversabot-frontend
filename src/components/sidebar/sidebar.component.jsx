@@ -1,28 +1,21 @@
 /** @format */
 import { ReactComponent as PlusSvg } from '../../assets/plus.svg';
 import { ReactComponent as ConversationSvg } from '../../assets/conversation-svgrepo-com.svg';
-import { useState, useEffect, useContext } from 'react';
+import { useEffect, useContext } from 'react';
 import Button from '../button/button.component';
 import './sidebar.styles.scss';
-import axios from 'axios';
 import { ChatContext } from '../../contexts/chat.context';
 import { Link } from 'react-router-dom';
+import apiService from '../../api/apiService';
 
 const SideBar = ({ onNewChatClick }) => {
   const { existingChats, setExistingChats } = useContext(ChatContext);
   const { setCurrentOpenedChat, currentOpenedChat } = useContext(ChatContext);
-  const { setAiResult } = useContext(ChatContext);
 
   const handleExistingChatClick = async (chatId) => {
-    // Reset the AI results if the user created a new chat and then clicked on an existing one.
-    setAiResult({
-      id: null,
-      message: null,
-      userInput: null,
-      chatTitle: null,
-    });
-    const url = 'http://localhost:8080/api/chats/';
-    const response = await axios.get(`${url}${chatId}`);
+    const url = 'chats/';
+
+    const response = await apiService.get(`${url}${chatId}`);
 
     if (response.data) {
       const updatedChat = {
@@ -32,8 +25,7 @@ const SideBar = ({ onNewChatClick }) => {
       };
       setCurrentOpenedChat(updatedChat);
       console.log(updatedChat.messages);
-      console.log("typeof(updatedChat.messages)", typeof(updatedChat.messages));
-      
+      console.log('typeof(updatedChat.messages)', typeof updatedChat.messages);
     }
   };
 
@@ -41,10 +33,19 @@ const SideBar = ({ onNewChatClick }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/chats/');
+        const response = await apiService.get('chats/');
+
         setExistingChats(response.data);
       } catch (err) {
-        console.error(err);
+        if (err.response) {
+          console.log(err.response.data);
+          console.log(err.response.status);
+          console.log(err.response.headers);
+        } else if (err.request) {
+          console.log(err.request);
+        } else {
+          console.log(err.message);
+        }
       }
     };
     fetchData();
