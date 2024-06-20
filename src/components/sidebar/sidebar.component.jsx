@@ -10,7 +10,7 @@ import apiService from '../../api/apiService';
 
 const SideBar = ({ onNewChatClick }) => {
   const { existingChats, setExistingChats } = useContext(ChatContext);
-  const { setCurrentOpenedChat, currentOpenedChat } = useContext(ChatContext);
+  const { setCurrentOpenedChat } = useContext(ChatContext);
 
   const handleExistingChatClick = async (chatId) => {
     const url = 'chats/';
@@ -24,8 +24,6 @@ const SideBar = ({ onNewChatClick }) => {
         messages: response.data.messages,
       };
       setCurrentOpenedChat(updatedChat);
-      console.log(updatedChat.messages);
-      console.log('typeof(updatedChat.messages)', typeof updatedChat.messages);
     }
   };
 
@@ -34,22 +32,25 @@ const SideBar = ({ onNewChatClick }) => {
     const fetchData = async () => {
       try {
         const response = await apiService.get('chats/');
-
-        setExistingChats(response.data);
-      } catch (err) {
-        if (err.response) {
-          console.log(err.response.data);
-          console.log(err.response.status);
-          console.log(err.response.headers);
-        } else if (err.request) {
-          console.log(err.request);
+        setExistingChats((previousChats) => response.data);
+      } catch (error) {
+        if (error.response) {
+          throw new Error(
+            'Response error fetching the existing chats.' + error.response
+          );
+        } else if (error.request) {
+          throw new Error(
+            'Request error fetching the existing chats.' + error.request
+          );
         } else {
-          console.log(err.message);
+          throw new Error(
+            'Generic error fetching the existing chats.' + error.message
+          );
         }
       }
     };
     fetchData();
-  }, []);
+  }, [setExistingChats]);
 
   return (
     <nav className="sidebar">

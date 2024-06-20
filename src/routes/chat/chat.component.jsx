@@ -17,7 +17,6 @@ const Chat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { currentOpenedChat, setCurrentOpenedChat } = useContext(ChatContext);
   const { setExistingChats } = useContext(ChatContext);
-  const { aiResult, setAiResult } = useContext(ChatContext);
 
   useEffect(() => {
     setShowNewChatContent(false);
@@ -27,15 +26,17 @@ const Chat = () => {
     //   Fetch existing chats when currentOpenedChat is updated
     const fetchExistingChats = async () => {
       try {
-        console.log(apiService.url);
         const response = await apiService.get('chats/');
-        setExistingChats(response.data);
+        setExistingChats((previousChats) => response.data);
       } catch (e) {
-        console.log(e);
+        console.error('An error occurred:' + e.message);
+        throw new Error(
+          "It's not possible to get all the chats at this moment, try later."
+        );
       }
     };
     fetchExistingChats();
-  }, [currentOpenedChat]);
+  }, [setExistingChats]);
 
   const clearUserInput = () => {
     setUserInput('');
@@ -73,12 +74,7 @@ const Chat = () => {
       if (!gpt_response.data.success) {
         const apiErrorMessage = await gpt_response.data.message;
         setShowNewChatContent(false);
-        setAiResult({
-          message: apiErrorMessage,
-          userInput: clearUserInput(),
-        });
-
-        return;
+        throw new Error(apiErrorMessage);
       }
       const chat_id = gpt_response.data.id;
       const chat_record = await apiService.get(`${url}${chat_id}`);
@@ -97,7 +93,7 @@ const Chat = () => {
         clearUserInput();
       }
     } catch (error) {
-      console.log('Error submitting the form', error);
+      throw new Error('Error submitting the form', error);
     } finally {
       setIsLoading(false);
     }
@@ -136,17 +132,16 @@ const Chat = () => {
         )}
         {currentOpenedChat.id && (
           <div className="chat-content">
-            {currentOpenedChat.messages
-              ?.map((existingChat, index) => (
-                <div className="chat-result" key={index}>
-                  <div className="chat-result__question">
-                    <p>{existingChat.user_input}</p>
-                  </div>
-                  <div className="chat-result__answer">
-                    <HtmlContent htmlString={existingChat.message} />
-                  </div>
+            {currentOpenedChat.messages?.map((existingChat, index) => (
+              <div className="chat-result" key={index}>
+                <div className="chat-result__question">
+                  <p>{existingChat.user_input}</p>
                 </div>
-              ))}
+                <div className="chat-result__answer">
+                  <HtmlContent htmlString={existingChat.message} />
+                </div>
+              </div>
+            ))}
             <div className="chat-search">
               <form onSubmit={handleSubmit} className="form-container">
                 <FormInput
